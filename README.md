@@ -1,7 +1,5 @@
-# junit5-jupiter-starter-maven
+# json-serialization-jackson-example
 
-The `junit5-jupiter-starter-maven` project demonstrates how to execute JUnit Jupiter
-tests using Maven.
-
-Please note that this project uses the [Maven Wrapper](https://github.com/apache/maven-wrapper).
-Thus, to ensure that the correct version of Maven is used, invoke `mvnw` instead of `mvn`.
+Demonstrates usage of Map<String, Object> serialization and deserialization, proving you 
+don't need to use Map<String, String> or Map<String, Map<String, String>> as the reference values 
+in your POJO objects.
