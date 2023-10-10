@@ -12,19 +12,25 @@ import java.util.Map;
 
 public class TestObjects {
 
-
   @ToString
   @Getter
   @AllArgsConstructor
   @NoArgsConstructor
   static class Foo {
+
     @JsonSerialize(using = ToStringSerializer.class)
     @JsonProperty("id")
     long id;
+
     @JsonProperty("description")
     String description;
+
     @JsonProperty("bar")
     Bar bar;
+
+    @JsonProperty("primitiveBoolean")
+    boolean primitiveBoolean;
+
   }
 
   @ToString
@@ -32,16 +38,21 @@ public class TestObjects {
   @AllArgsConstructor
   @NoArgsConstructor
   static class Bar {
+
     @JsonSerialize(using = ToStringSerializer.class)
     @JsonProperty("id")
     long id;
+
     @JsonSerialize(using = ToStringSerializer.class)
-    @JsonProperty("enabled")
-    boolean enabled;
+    @JsonProperty("stringBoolean")
+    boolean stringBoolean;
+
     @JsonProperty("description")
     String description;
+
     @JsonSerialize(using = BarMapSerializer.class)
     @JsonProperty("bar")
     Map<String, Object> nestedMap;
+
   }
 }
