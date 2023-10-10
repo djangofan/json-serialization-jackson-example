@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Main {
-  private static final ObjectMapper MAPPER = new ObjectMapper();
+  static final ObjectMapper MAPPER = new ObjectMapper();
 
   public static void main(String[] args) throws JsonProcessingException {
     final Map<String, Object> linkedHashMap = new LinkedHashMap<>();
