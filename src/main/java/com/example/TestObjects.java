@@ -1,9 +1,10 @@
-package com.test;
+package com.example;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -16,6 +17,7 @@ public class TestObjects {
   @Getter
   @AllArgsConstructor
   @NoArgsConstructor
+  @Builder
   static class Foo {
 
     @JsonSerialize(using = ToStringSerializer.class)
@@ -37,11 +39,12 @@ public class TestObjects {
   @Getter
   @AllArgsConstructor
   @NoArgsConstructor
+  @Builder
   static class Bar {
 
     @JsonSerialize(using = ToStringSerializer.class)
     @JsonProperty("id")
-    long id;
+    int id;
 
     @JsonSerialize(using = ToStringSerializer.class)
     @JsonProperty("stringBoolean")
@@ -55,4 +58,5 @@ public class TestObjects {
     Map<String, Object> nestedMap;
 
   }
+
 }
