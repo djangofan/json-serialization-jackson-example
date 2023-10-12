@@ -1,6 +1,9 @@
 package com.example;
 
 
+import com.example.TestObjects.Bar;
+import com.example.TestObjects.Foo;
+import com.example.TestObjects.NestedMap;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -23,7 +26,7 @@ public class TestObjectsTest {
     Map<String, Object> deepLinkedHashMap = new LinkedHashMap<>();
     deepLinkedHashMap.put("foo1", "1");
     deepLinkedHashMap.put("foo2", "2");
-    TestObjects.NestedMap deepMap = TestObjects.NestedMap.builder()
+    NestedMap deepMap = NestedMap.builder()
         .id(3435)
         .description("deep map")
         .nestedMap(deepLinkedHashMap)
@@ -32,7 +35,7 @@ public class TestObjectsTest {
     Map<String, Object> fooLinkedHashMap = new LinkedHashMap<>();
     fooLinkedHashMap.put("foo1", "1");
     fooLinkedHashMap.put("foo2", "2");
-    TestObjects.NestedMap fooNestedMap = TestObjects.NestedMap.builder()
+    NestedMap fooNestedMap = NestedMap.builder()
         .id(3435)
         .description("foo map")
         .nestedMap(fooLinkedHashMap)
@@ -42,20 +45,20 @@ public class TestObjectsTest {
     barLinkedHashMap.put("bar1", "3");
     barLinkedHashMap.put("bar2", "4");
     barLinkedHashMap.put("deepMap", deepMap);
-    TestObjects.NestedMap barNestedMap = TestObjects.NestedMap.builder()
+    NestedMap barNestedMap = NestedMap.builder()
         .id(1465)
         .description("bar map")
         .nestedMap(barLinkedHashMap)
         .build();
 
-    TestObjects.Bar bar = TestObjects.Bar.builder()
+    Bar bar = Bar.builder()
         .id(1)
         .description("bar description")
         .stringBoolean("false")
         .barMap(barNestedMap)
         .build();
 
-    TestObjects.Foo foo = TestObjects.Foo.builder()
+    Foo foo = Foo.builder()
         .id(1)
         .description("foo description")
         .primitiveBoolean(false)
@@ -80,7 +83,7 @@ public class TestObjectsTest {
     Map<String, Object> deepLinkedHashMap = new LinkedHashMap<>();
     deepLinkedHashMap.put("foo1", "11");
     deepLinkedHashMap.put("foo2", "12");
-    TestObjects.NestedMap deepMap = TestObjects.NestedMap.builder()
+    NestedMap deepMap = NestedMap.builder()
         .id(235)
         .description("deep map")
         .nestedMap(deepLinkedHashMap)
@@ -89,7 +92,7 @@ public class TestObjectsTest {
     Map<String, Object> fooLinkedHashMap = new LinkedHashMap<>();
     fooLinkedHashMap.put("foo1", "1");
     fooLinkedHashMap.put("foo2", "2");
-    TestObjects.NestedMap fooNestedMap = TestObjects.NestedMap.builder()
+    NestedMap fooNestedMap = NestedMap.builder()
         .id(3435)
         .description("foo map")
         .nestedMap(fooLinkedHashMap)
@@ -99,20 +102,20 @@ public class TestObjectsTest {
     barLinkedHashMap.put("bar1", "3");
     barLinkedHashMap.put("bar2", "4");
     barLinkedHashMap.put("deepMap", deepMap);
-    TestObjects.NestedMap barNestedMap = TestObjects.NestedMap.builder()
+    NestedMap barNestedMap = NestedMap.builder()
         .id(1465)
         .description("bar map")
         .nestedMap(barLinkedHashMap)
         .build();
 
-    TestObjects.Bar bar = TestObjects.Bar.builder()
+    Bar bar = Bar.builder()
         .id(7)
         .description("bar description")
         .stringBoolean("false")
         .barMap(barNestedMap)
         .build();
 
-    TestObjects.Foo foo = TestObjects.Foo.builder()
+    Foo foo = Foo.builder()
         .id(9)
         .description("foo description")
         .primitiveBoolean(false)
@@ -131,9 +134,10 @@ public class TestObjectsTest {
     assertTrue(serialized.contains("foo description"));
     assertTrue(serialized.contains("deep map"));
     try {
-      TestObjects.Foo foo1 = MAPPER.readValue(serialized, TestObjects.Foo.class);
-      TestObjects.Bar bar1 = foo1.getBarWithMap();
-      Map<String, Object> deep1 = bar1.getBarMap().getNestedMap();
+      Foo foo1 = MAPPER.readValue(serialized, Foo.class);
+      Bar bar1 = foo1.getBarWithMap();
+      NestedMap barMap1 = bar1.getBarMap();
+      Map<String, Object> deep1 = barMap1.getNestedMap();
 
       assertEquals(bar1.getId(), 7);
       assertEquals(foo1.getDescription(), "foo description");
@@ -158,6 +162,40 @@ public class TestObjectsTest {
       throw new RuntimeException(e);
     }
 
+  }
+
+  @Test
+  void testDeserialization_NestedMapsOnly() {
+
+    Map<String, Object> level3Map = new LinkedHashMap<>();
+    level3Map.put("foo1", "31");
+    level3Map.put("foo2", "32");
+
+    Map<String, Object> level2Map = new LinkedHashMap<>();
+    level2Map.put("foo1", "21");
+    level2Map.put("level3Map", level3Map);
+
+    Map<String, Object> level1Map = new LinkedHashMap<>();
+    level1Map.put("foo1", "11");
+    level1Map.put("level2Map", level2Map);
+
+    NestedMap level0map = NestedMap.builder()
+        .nestedMap(level1Map)
+        .build();
+
+    String serialized = null;
+    try {
+      serialized = MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(level0map);
+
+      NestedMap nm0 = MAPPER.readValue(serialized, NestedMap.class);
+      Map<String, Object> nm1 = nm0.getNestedMap();
+      Map<String, Object> nm2 = (Map<String, Object>) nm1.get("level2Map");
+      Map<String, Object> nm3 = (Map<String, Object>) nm2.get("level3Map");
+      System.out.println(nm1);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+    //System.out.println(serialized);
   }
 
 }
