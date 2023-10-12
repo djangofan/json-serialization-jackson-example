@@ -33,6 +33,9 @@ public class TestObjects {
     @JsonProperty("primitiveBoolean")
     boolean primitiveBoolean;
 
+    @JsonProperty("booleanObject")
+    Boolean booleanObject;
+
   }
 
   @ToString
@@ -46,9 +49,8 @@ public class TestObjects {
     @JsonProperty("id")
     int id;
 
-    @JsonSerialize(using = ToStringSerializer.class)
     @JsonProperty("stringBoolean")
-    boolean stringBoolean;
+    String stringBoolean;
 
     @JsonProperty("description")
     String description;
