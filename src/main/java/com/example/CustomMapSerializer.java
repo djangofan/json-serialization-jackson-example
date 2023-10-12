@@ -9,12 +9,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BarMapSerializer extends StdSerializer<Map<String, Object>> {
-  public BarMapSerializer() {
+public class CustomMapSerializer extends StdSerializer<Map<String, Object>> {
+  public CustomMapSerializer() {
     this(null);
   }
 
-  public BarMapSerializer(Class<Map<String, Object>> t) {
+  public CustomMapSerializer(Class<Map<String, Object>> t) {
     super(t);
   }
 

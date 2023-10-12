@@ -19,66 +19,123 @@ public class TestObjectsTest {
 
   @Test
   void testSerialization() {
-    Map<String, Object> linkedHashMap = new LinkedHashMap<>();
-    linkedHashMap.put("foo", "bar");
-    linkedHashMap.put("bar", "foo");
+
+    Map<String, Object> deepLinkedHashMap = new LinkedHashMap<>();
+    deepLinkedHashMap.put("foo1", "1");
+    deepLinkedHashMap.put("foo2", "2");
+    TestObjects.NestedMap deepMap = TestObjects.NestedMap.builder()
+        .id(3435)
+        .description("deep map")
+        .nestedMap(deepLinkedHashMap)
+        .build();
+
+    Map<String, Object> fooLinkedHashMap = new LinkedHashMap<>();
+    fooLinkedHashMap.put("foo1", "1");
+    fooLinkedHashMap.put("foo2", "2");
+    TestObjects.NestedMap fooNestedMap = TestObjects.NestedMap.builder()
+        .id(3435)
+        .description("foo map")
+        .nestedMap(fooLinkedHashMap)
+        .build();
+
+    Map<String, Object> barLinkedHashMap = new LinkedHashMap<>();
+    barLinkedHashMap.put("bar1", "3");
+    barLinkedHashMap.put("bar2", "4");
+    barLinkedHashMap.put("deepMap", deepMap);
+    TestObjects.NestedMap barNestedMap = TestObjects.NestedMap.builder()
+        .id(1465)
+        .description("bar map")
+        .nestedMap(barLinkedHashMap)
+        .build();
 
     TestObjects.Bar bar = TestObjects.Bar.builder()
         .id(1)
         .description("bar description")
         .stringBoolean("false")
-        .nestedMap(linkedHashMap)
+        .barMap(barNestedMap)
         .build();
+
     TestObjects.Foo foo = TestObjects.Foo.builder()
         .id(1)
         .description("foo description")
         .primitiveBoolean(false)
         .booleanObject(true)
-        .bar(bar)
+        .fooMap(fooNestedMap)
+        .barWithMap(bar)
         .build();
 
     String serialized = null;
     try {
-      serialized = MAPPER.writeValueAsString(foo);
+      serialized = MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(foo);
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
+    System.out.println(serialized);
     assertTrue(serialized.contains("foo description"));
+    assertTrue(serialized.contains("deep map"));
   }
 
   @Test
   void testDeserialization() {
-    Map<String, Object> linkedHashMap = new LinkedHashMap<>();
-    linkedHashMap.put("foo", "bar");
-    linkedHashMap.put("bar", "foo");
+    Map<String, Object> deepLinkedHashMap = new LinkedHashMap<>();
+    deepLinkedHashMap.put("foo1", "11");
+    deepLinkedHashMap.put("foo2", "12");
+    TestObjects.NestedMap deepMap = TestObjects.NestedMap.builder()
+        .id(235)
+        .description("deep map")
+        .nestedMap(deepLinkedHashMap)
+        .build();
+
+    Map<String, Object> fooLinkedHashMap = new LinkedHashMap<>();
+    fooLinkedHashMap.put("foo1", "1");
+    fooLinkedHashMap.put("foo2", "2");
+    TestObjects.NestedMap fooNestedMap = TestObjects.NestedMap.builder()
+        .id(3435)
+        .description("foo map")
+        .nestedMap(fooLinkedHashMap)
+        .build();
+
+    Map<String, Object> barLinkedHashMap = new LinkedHashMap<>();
+    barLinkedHashMap.put("bar1", "3");
+    barLinkedHashMap.put("bar2", "4");
+    barLinkedHashMap.put("deepMap", deepMap);
+    TestObjects.NestedMap barNestedMap = TestObjects.NestedMap.builder()
+        .id(1465)
+        .description("bar map")
+        .nestedMap(barLinkedHashMap)
+        .build();
 
     TestObjects.Bar bar = TestObjects.Bar.builder()
-        .id(3)
+        .id(7)
         .description("bar description")
         .stringBoolean("false")
-        .nestedMap(linkedHashMap)
+        .barMap(barNestedMap)
         .build();
+
     TestObjects.Foo foo = TestObjects.Foo.builder()
-        .id(1)
+        .id(9)
         .description("foo description")
         .primitiveBoolean(false)
         .booleanObject(true)
-        .bar(bar)
+        .fooMap(fooNestedMap)
+        .barWithMap(bar)
         .build();
 
     String serialized = null;
     try {
-      serialized = MAPPER.writeValueAsString(foo);
+      serialized = MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(foo);
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
-
+    System.out.println(serialized);
     assertTrue(serialized.contains("foo description"));
+    assertTrue(serialized.contains("deep map"));
     try {
       TestObjects.Foo foo1 = MAPPER.readValue(serialized, TestObjects.Foo.class);
-      TestObjects.Bar bar1 = foo1.getBar();
+      TestObjects.Bar bar1 = foo1.getBarWithMap();
+      Map<String, Object> deep1 = bar1.getBarMap().getNestedMap();
 
-      assertEquals(bar1.id, 3);
+      assertEquals(bar1.getId(), 7);
       assertEquals(foo1.getDescription(), "foo description");
 
       // verify getPrimitiveBoolean
@@ -94,6 +151,9 @@ public class TestObjectsTest {
       assertEquals(foo1.getBooleanObject().getClass(), Boolean.class);
       assertEquals(foo1.getBooleanObject(), true);
 
+      // verify deep map
+      assertEquals("deep map", ((Map)deep1.get("deepMap")).get("description"));
+      assertEquals("12", ((Map<?, ?>)((Map<?, ?>)deep1.get("deepMap")).get("nestedMap")).get("foo2"));
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }

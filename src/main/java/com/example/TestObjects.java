@@ -27,8 +27,11 @@ public class TestObjects {
     @JsonProperty("description")
     String description;
 
-    @JsonProperty("bar")
-    Bar bar;
+    @JsonProperty("fooMap")
+    NestedMap fooMap;
+
+    @JsonProperty("barWithMap")
+    Bar barWithMap;
 
     @JsonProperty("primitiveBoolean")
     boolean primitiveBoolean;
@@ -55,8 +58,27 @@ public class TestObjects {
     @JsonProperty("description")
     String description;
 
-    @JsonSerialize(using = BarMapSerializer.class)
-    @JsonProperty("bar")
+    @JsonProperty("barMap")
+    NestedMap barMap;
+
+  }
+
+  @ToString
+  @Getter
+  @AllArgsConstructor
+  @NoArgsConstructor
+  @Builder
+  static class NestedMap {
+
+    @JsonSerialize(using = ToStringSerializer.class)
+    @JsonProperty("id")
+    int id;
+
+    @JsonProperty("description")
+    String description;
+
+    @JsonSerialize(using = CustomMapSerializer.class)
+    @JsonProperty("nestedMap")
     Map<String, Object> nestedMap;
 
   }
